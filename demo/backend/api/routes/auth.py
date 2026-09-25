@@ -1,0 +1,79 @@
+"""
+Authentication helper - gets and caches OAuth2 tokens from  .
+"""
+import base64
+import httpx
+import logging
+from datetime import datetime, timedelta
+from fastapi import HTTPException
+from api.config import  _CLIENT_ID,  _CLIENT_SECRET,  _AUTH_URL
+
+logger = logging.getLogger(__name__)
+
+# In-memory token cache
+_token_cache = {"token": None, "expires_at": None}
+
+async def get_ _token():
+    """
+    Get a valid OAuth2 token from  .
+    
+    Caches the token in memory to avoid calling   auth on every request.
+    Automatically refreshes when expired.
+    
+    Returns:
+        str: Access token
+    """
+    
+    # Return cached token if still valid
+    if _token_cache["token"] and _token_cache["expires_at"]:
+        if datetime.now() < _token_cache["expires_at"]:
+            return _token_cache["token"]
+    
+    # Get new token from  
+    # Append /v1/token to the base OAuth URL provided by  
+    auth_url = f"{ _AUTH_URL}/v1/token"
+    logger.info(f"Requesting auth token from {auth_url}")
+    
+    credentials = f"{ _CLIENT_ID}:{ _CLIENT_SECRET}"
+    base64_credentials = base64.b64encode(credentials.encode()).decode()
+    
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            url=auth_url,
+            headers={
+                'Authorization': f'Basic {base64_credentials}',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            data={'grant_type': 'client_credentials'}
+        )
+    
+    if response.status_code != 200:
+        error_detail = f"Authentication failed (HTTP {response.status_code})"
+        try:
+            error_data = response.json()
+            error_detail = f"{error_detail}: {error_data.get('error_description', error_data.get('message', response.text))}"
+        except:
+            error_detail = f"{error_detail}: {response.text}"
+        
+        # Provide helpful hint for 404 errors
+        if response.status_code == 404:
+            error_detail += " - Verify  _AUTH_URL is correct (should be the OAuth base URL without /v1/token)"
+        
+        logger.error(error_detail)
+        raise HTTPException(
+            status_code=response.status_code,
+            detail=error_detail
+        )
+    
+    # Parse and cache token
+    data = response.json()
+    access_token = data['access_token']
+    expires_in = data['expires_in']
+    
+    # Cache with 5-minute safety margin
+    _token_cache["token"] = access_token
+    _token_cache["expires_at"] = datetime.now() + timedelta(seconds=expires_in - 300)
+    
+    logger.info(f"Token cached, expires at {_token_cache['expires_at'].strftime('%H:%M:%S')}")
+    
+    return access_token
