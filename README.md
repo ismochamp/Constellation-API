@@ -16,7 +16,7 @@ Welcome to Constellation API App Examples! In this repository you can find examp
 | Example | Description |
 | ------- | ----------- |
 | [catalog-explorer](catalog-explorer) | Full-stack React + FastAPI application demonstrating how to browse, search, price, and purchase satellite imagery from  's Catalog API. Includes map-based search, STAC item browsing, purchase workflow, and download management. |
-| [tasking-demo](tasking-demo) | Full-stack React + FastAPI application demonstrating the complete workflow for requesting satellite imagery captures using  's Tasking API. Includes OAuth2 authentication, contract management, interactive map, task monitoring, and product downloads. |
+| [demo](demo) | Full-stack React + FastAPI application demonstrating the complete workflow for requesting satellite imagery captures using  's Tasking API. Includes OAuth2 authentication, contract management, interactive map, task monitoring, and product downloads. |
 
 ---
 
