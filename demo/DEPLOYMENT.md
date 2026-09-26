@@ -1,11 +1,3 @@
-# Deployment Guide
-
-This guide explains what you need to change in this demo app to deploy it to production.
-
-> **⚠️ Important:** This demo is designed for educational purposes. Before deploying to production, implement proper security measures, monitoring, and follow your organization's security and compliance requirements.
-
----
-
 ## Understanding the Development Setup
 
 During development (`npm run dev`), the Vite proxy automatically forwards API requests:
