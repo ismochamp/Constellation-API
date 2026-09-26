@@ -43,7 +43,7 @@ This demo application shows how to work with the   Catalog API to discover, eval
 
 ```bash
 git clone https://github.com/ -ltd/app-examples
-cd app-examples/catalog-explorer
+cd app-examples/explorer
 
 # Backend Setup
 cd backend
@@ -82,7 +82,7 @@ Navigate to `http://localhost:5173`
 ## Project Structure
 
 ```
-catalog-explorer/
+explorer/
 ├── backend/              # FastAPI backend
 │   ├── .env.example     # Environment template (COPY TO .env)
 │   ├── api/
